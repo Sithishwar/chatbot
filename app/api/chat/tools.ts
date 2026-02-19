@@ -1,21 +1,23 @@
+import { tool } from 'ai';
+import { z } from 'zod';
+
 export const weatherTool = tool({
   description: 'Get the current weather for a given city',
 
-  inputSchema: z.object({
+  parameters: z.object({
     city: z.string().describe('The city to get weather for'),
   }),
 
-  run: async ({ city }) => {
+  execute: async ({ city }: { city: string }): Promise<{ city: string; temperature: number; condition: string }> => {
     const mockWeather: Record<string, { temp: number; condition: string }> = {
       london: { temp: 12, condition: 'Cloudy' },
       tokyo: { temp: 22, condition: 'Sunny' },
-      chennai: { temp: 34, condition: 'Hot & Humid' },
+      'new york': { temp: 18, condition: 'Partly cloudy' },
     };
 
-    const data = mockWeather[city.toLowerCase()] ?? {
-      temp: 25,
-      condition: 'Unknown',
-    };
+    const data =
+      mockWeather[city.toLowerCase()] ??
+      { temp: 20, condition: 'Unknown' };
 
     return {
       city,
@@ -24,3 +26,7 @@ export const weatherTool = tool({
     };
   },
 });
+
+export const tools = {
+  getWeather: weatherTool,
+};
